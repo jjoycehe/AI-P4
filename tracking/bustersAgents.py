@@ -12,7 +12,7 @@
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
 
-import util
+import util, sys
 from game import Agent
 from game import Directions
 from keyboardAgents import KeyboardAgent
@@ -163,4 +163,27 @@ class GreedyBustersAgent(BustersAgent):
             [beliefs for i, beliefs in enumerate(self.ghostBeliefs)
              if livingGhosts[i+1]]
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        closestAct = {}
+        for act in legal:
+            successorPosition = Actions.getSuccessor(pacmanPosition, act)
+            minGhostDistance = sys.maxint
+            for posProb in livingGhostPositionDistributions:
+                maxProb = -sys.maxint - 1
+                maxPos = list(posProb.keys())[0]
+                for pos in posProb:
+                    prob = posProb[pos]
+                    if prob > maxProb:
+                        maxPos = pos
+                        maxProb = prob
+                dist = self.distancer.getDistance(successorPosition, maxPos)
+                if dist < minGhostDistance:
+                    minGhostDistance = dist
+            closestAct[act] = minGhostDistance
+        minDist = sys.maxint
+        bestAct = ''
+        for act in closestAct:
+            dist = closestAct[act]
+            if dist < minDist:
+                minDist = dist
+                bestAct = act
+        return bestAct
