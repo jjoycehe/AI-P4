@@ -145,20 +145,28 @@ class ExactInference(InferenceModule):
              captured).
         """
         noisyDistance = observation
-        emissionModel = busters.getObservationDistribution(noisyDistance)
+        emissionModel = busters.getObservationDistribution(noisyDistance) 
         pacmanPosition = gameState.getPacmanPosition()
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # print("noisy dist")
+        # print(noisyDistance)
+        # print("emission model")
+        # print(emissionModel)
+        # print("pacman position")
+        # print(pacmanPosition)
 
         # Replace this code with a correct observation update
         # Be sure to handle the "jail" edge case where the ghost is eaten
         # and noisyDistance is None
         allPossible = util.Counter()
-        for p in self.legalPositions:
-            trueDistance = util.manhattanDistance(p, pacmanPosition)
-            if emissionModel[trueDistance] > 0:
-                allPossible[p] = 1.0
+        if noisyDistance == None:
+            allPossible[self.getJailPosition()] = 1.0
+        else:
+            for p in self.legalPositions:
+                trueDistance = util.manhattanDistance(p, pacmanPosition)
+                if emissionModel[trueDistance] > 0:
+                    allPossible[p] = self.beliefs[p] * emissionModel[trueDistance]
 
         "*** END YOUR CODE HERE ***"
 
@@ -219,7 +227,16 @@ class ExactInference(InferenceModule):
         positions after a time update from a particular position.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # print("beliefs")
+        # print(self.beliefs)
+        allPossible = util.Counter()
+        for pos in self.legalPositions: #for ghosts
+            newPosDist = self.getPositionDistribution(self.setGhostPosition(gameState, pos))
+            for newPos, prob in newPosDist.items():
+                allPossible[newPos] = self.beliefs[pos] * prob + allPossible[newPos]
+
+        allPossible.normalize()
+        self.beliefs = allPossible
 
     def getBeliefDistribution(self):
         return self.beliefs
