@@ -149,12 +149,6 @@ class ExactInference(InferenceModule):
         pacmanPosition = gameState.getPacmanPosition()
 
         "*** YOUR CODE HERE ***"
-        # print("noisy dist")
-        # print(noisyDistance)
-        # print("emission model")
-        # print(emissionModel)
-        # print("pacman position")
-        # print(pacmanPosition)
 
         # Replace this code with a correct observation update
         # Be sure to handle the "jail" edge case where the ghost is eaten
@@ -227,8 +221,6 @@ class ExactInference(InferenceModule):
         positions after a time update from a particular position.
         """
         "*** YOUR CODE HERE ***"
-        # print("beliefs")
-        # print(self.beliefs)
         allPossible = util.Counter()
         for pos in self.legalPositions: #for ghosts
             newPosDist = self.getPositionDistribution(self.setGhostPosition(gameState, pos))
