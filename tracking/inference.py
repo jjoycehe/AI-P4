@@ -266,7 +266,7 @@ class ParticleFilter(InferenceModule):
         self.particles = []
         print(self.numParticles)
         for i in range(self.numParticles):
-            self.particles.append(random.choice(self.legalPositions))
+            self.particles.append(self.legalPositions[i % len(self.legalPositions)])
 
     def observe(self, observation, gameState):
         """
