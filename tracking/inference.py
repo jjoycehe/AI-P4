@@ -264,8 +264,7 @@ class ParticleFilter(InferenceModule):
         """
         "*** YOUR CODE HERE ***"
         self.particles = []
-        print(self.numParticles)
-        for i in range(self.numParticles):
+        for i in range(0,self.numParticles):
             self.particles.append(self.legalPositions[i % len(self.legalPositions)])
 
     def observe(self, observation, gameState):
@@ -301,18 +300,18 @@ class ParticleFilter(InferenceModule):
         "*** YOUR CODE HERE ***"
         allPossible = util.Counter()
         if noisyDistance == None:
-            allPossible[self.getJailPosition()] = 1.0
-        elif self.beliefs.totalCount() == 0:
-            self.initializeUniformly(gameState)
+            for i in range(0,self.numParticles):
+                self.particles[i] = self.getJailPosition()
         else:
-            for p in self.legalPositions:
+            for p in self.particles:
                 trueDistance = util.manhattanDistance(p, pacmanPosition)
-                if emissionModel[trueDistance] > 0:
-                    randomPos = util.sample(self.beliefs)
-                    allPossible[p] = self.beliefs[randomPos] * emissionModel[trueDistance]
-        
-        allPossible.normalize()
-        self.beliefs = allPossible
+                allPossible[p] += emissionModel[trueDistance]
+            allPossible.normalize()
+            if allPossible.totalCount() == 0:
+                self.initializeUniformly(gameState)
+            else:
+                for i in range(0,self.numParticles):
+                    self.particles[i] = util.sample(allPossible)
 
     def elapseTime(self, gameState):
         """
@@ -339,12 +338,11 @@ class ParticleFilter(InferenceModule):
         Counter object)
         """
         "*** YOUR CODE HERE ***"
-        self.beliefs = util.Counter()
-        counter = util.Counter()
+        beliefs = util.Counter()
         for pos in self.particles:
-            counter[pos] = counter[pos] + 1
-            self.beliefs[pos] = counter[pos]/float(self.numParticles)
-        return self.beliefs
+            beliefs[pos] += 1
+        beliefs.normalize()
+        return beliefs
 
 class MarginalInference(InferenceModule):
     """
