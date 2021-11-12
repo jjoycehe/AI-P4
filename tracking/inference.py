@@ -328,7 +328,9 @@ class ParticleFilter(InferenceModule):
         a belief distribution.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        for i in range(0,self.numParticles):
+            newPosDist = self.getPositionDistribution(self.setGhostPosition(gameState, self.particles[i]))
+            self.particles[i] = util.sample(newPosDist)
 
     def getBeliefDistribution(self):
         """
@@ -338,11 +340,11 @@ class ParticleFilter(InferenceModule):
         Counter object)
         """
         "*** YOUR CODE HERE ***"
-        beliefs = util.Counter()
+        self.beliefs = util.Counter()
         for pos in self.particles:
-            beliefs[pos] += 1
-        beliefs.normalize()
-        return beliefs
+            self.beliefs[pos] += 1
+        self.beliefs.normalize()
+        return self.beliefs
 
 class MarginalInference(InferenceModule):
     """
