@@ -306,7 +306,6 @@ class ParticleFilter(InferenceModule):
             for p in self.legalPositions:
                 trueDistance = util.manhattanDistance(p, pacmanPosition)
                 if emissionModel[trueDistance] > 0:
-                    print(util.sample(self.beliefs))
                     allPossible[p] = self.beliefs[p] * emissionModel[trueDistance]
         
         allPossible.normalize()
