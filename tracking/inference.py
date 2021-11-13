@@ -417,6 +417,12 @@ class JointParticleFilter:
         weight with each position) is incorrect and may produce errors.
         """
         "*** YOUR CODE HERE ***"
+        self.particles = []
+        permutations = list(itertools.product(self.legalPositions, repeat = self.numGhosts))
+        random.shuffle(permutations)
+        for i in range(0, self.numParticles):
+            self.particles.append(permutations[i % len(permutations)])
+
 
     def addGhostAgent(self, agent):
         """
@@ -531,7 +537,11 @@ class JointParticleFilter:
 
     def getBeliefDistribution(self):
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        self.beliefs = util.Counter()
+        for pos in self.particles:
+            self.beliefs[pos] += 1
+        self.beliefs.normalize()
+        return self.beliefs
 
 # One JointInference module is shared globally across instances of MarginalInference
 jointInference = JointParticleFilter()
