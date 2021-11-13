@@ -471,19 +471,22 @@ class JointParticleFilter:
 
         "*** YOUR CODE HERE ***"
         allPossible = util.Counter()
-        for g in range(self.numGhosts):
-            if noisyDistances[g] == None:
-                for p in self.particles:
-                    self.getParticleWithGhostInJail(p, g)
-        for p in self.particles:
-            prob = 1
-            for g in range(self.numGhosts):
-                trueDistance = util.manhattanDistance(p[g], pacmanPosition)
-                prob *= emissionModels[g][trueDistance]
-            allPossible[p] += prob
-        allPossible.normalize()
+        if noisyDistances != None:
+            for p in self.particles:
+                prob = 1
+                for g in range(self.numGhosts):
+                    trueDistance = util.manhattanDistance(p[g], pacmanPosition)
+                    prob *= emissionModels[g][trueDistance]
+                allPossible[p] += prob
+            allPossible.normalize()
+
         if allPossible.totalCount() == 0:
-            self.initializeParticles()
+            if noisyDistances == None:
+                for p in self.particles:
+                    for g in range(self.numGhosts):
+                        self.getParticleWithGhostInJail(p, g)
+            else:
+                self.initializeParticles()
         else:
             for i in range(0, self.numParticles):
                 self.particles[i] = util.sample(allPossible)
